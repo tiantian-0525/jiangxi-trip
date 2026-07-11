@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>江西 7 天半 · 南昌→景德镇→婺源→三清山→葛仙村 🏺⛰️</title>
+<meta name="description" content="两人江西夏日行程：南昌滕王阁→景德镇陶瓷DIY→婺源漂流+篁岭→三清山徒步→葛仙村夜宿">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   Design System — Apple style
+   ═══════════════════════════════════════════ */
+:root {
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f5f5f7;
+  --bg-tertiary:   #fbfbfd;
+  --bg-grouped:    #f2f2f7;
+  --bg-elevated:   #ffffff;
+  --text-primary:   #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary:  #aeaeb2;
+  --accent:        #0071e3;
+  --accent-hover:  #0077ed;
+  --tint-red:    #ff3b30;
+  --tint-orange: #ff9500;
+  --tint-green:  #34c759;
+  --tint-blue:   #007aff;
+  --tint-purple: #af52de;
+  --tint-pink:   #ff2d55;
+  --separator:  rgba(60, 60, 67, .12);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 14px rgba(0,0,0,.08);
+  --shadow-lg:  0 8px 30px rgba(0,0,0,.12);
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+               "Helvetica Neue", "Arial", sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.47059;
+  letter-spacing: -0.022em;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Map ── */
+#map { width: 100%; height: 40vh; min-height: 280px; position: sticky; top: 0; z-index: 100; }
+.locate-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  border: none; box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.locate-btn.active { color: #007aff; }
+@keyframes loc-pulse {
+  0%   { transform: scale(1); opacity: .55; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.loc-pulse {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(0,122,255,.25);
+  animation: loc-pulse 1.6s ease-out infinite;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex; gap: 6px; padding: 12px 16px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  background: rgba(255,255,255,.85); -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px); position: sticky; top: 40vh; z-index: 99;
+  border-bottom: .5px solid var(--separator); scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0; padding: 7px 16px; border-radius: 980px; border: none;
+  background: var(--bg-grouped); color: var(--text-secondary);
+  font-size: 14px; font-weight: 500; cursor: pointer; transition: all .25s ease;
+  white-space: nowrap; letter-spacing: -0.01em;
+}
+.tab:active { transform: scale(.96); }
+.tab.active { background: var(--accent); color: #fff; }
+
+/* ── Main content ── */
+.content { max-width: 680px; margin: 0 auto; padding: 16px 16px calc(24px + var(--safe-bottom)); }
+
+/* ── Overview ── */
+.hero { text-align: center; padding: 28px 20px 20px; }
+.hero h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+.hero .subtitle { font-size: 17px; color: var(--text-secondary); margin-top: 6px; font-weight: 400; }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.info-card { background: var(--bg-elevated); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm); }
+.info-card .label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .02em; margin-bottom: 6px; }
+.info-card .value { font-size: 15px; font-weight: 600; line-height: 1.4; }
+
+/* ── Section headers ── */
+.section-head { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .03em; padding: 20px 0 8px; }
+
+/* ── Day header ── */
+.day-head { padding: 20px 0 12px; }
+.day-head h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.day-head p { font-size: 15px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ── Route bar ── */
+.route-bar { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 14px; box-shadow: var(--shadow-sm); font-size: 13px; color: var(--text-secondary); line-height: 1.7; white-space: pre-line; }
+.route-bar strong { color: var(--text-primary); }
+
+/* ── Timeline ── */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 20px; bottom: 20px; width: 1.5px; background: var(--separator); }
+.tl-item { position: relative; margin-bottom: 10px; }
+.tl-dot { position: absolute; left: -20px; top: 18px; width: 10px; height: 10px; border-radius: 50%; z-index: 1; box-shadow: 0 0 0 3px var(--bg-secondary); }
+.tl-dot.food    { background: var(--tint-red); }
+.tl-dot.spot    { background: var(--tint-blue); }
+.tl-dot.hotel   { background: var(--tint-orange); }
+.tl-dot.drink   { background: var(--tint-purple); }
+.tl-dot.transport { background: var(--text-tertiary); }
+.tl-dot.dress   { background: var(--tint-pink); }
+
+/* ── Card ── */
+.card { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-sm); transition: box-shadow .25s ease; cursor: pointer; }
+.card:active { box-shadow: var(--shadow-md); }
+.card .time { font-size: 12px; font-weight: 600; color: var(--text-tertiary); letter-spacing: .01em; }
+.card .name { font-size: 17px; font-weight: 600; margin: 2px 0 4px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 6px; }
+.card .desc { font-size: 14px; color: var(--text-secondary); line-height: 1.45; }
+
+/* Badge */
+.badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 4px; }
+.badge.food   { background: rgba(255,59,48,.1);  color: var(--tint-red); }
+.badge.spot   { background: rgba(0,122,255,.1);  color: var(--tint-blue); }
+.badge.drink  { background: rgba(175,82,222,.1); color: var(--tint-purple); }
+.badge.dress  { background: rgba(255,45,85,.1); color: var(--tint-pink); }
+
+/* Budget */
+.budget { display: inline-block; margin-top: 6px; padding: 3px 10px; background: var(--bg-grouped); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+
+/* Payment */
+.pays { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.pay { font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 600; }
+.pay.ok  { background: rgba(52,199,89,.1);  color: var(--tint-green); }
+.pay.no  { background: rgba(255,59,48,.08); color: var(--tint-red); }
+.pay.idk { background: rgba(255,149,0,.1);  color: var(--tint-orange); }
+
+/* Links row */
+.links { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 8px 14px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; border: none; cursor: pointer;
+  text-decoration: none !important; transition: filter .2s;
+}
+.btn:active { filter: brightness(.9); }
+.btn.nav    { background: var(--accent); color: #fff; }
+.btn.xhs    { background: #ff2442; color: #fff; }
+.btn.dp     { background: #ffa700; color: #fff; }
+.btn.rsv    { background: var(--tint-green); color: #fff; }
+
+/* Action Sheet */
+.as-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,.35); backdrop-filter: blur(2px);
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.as-overlay.show { opacity: 1; pointer-events: auto; }
+.as-sheet {
+  width: 100%; max-width: 420px;
+  padding: 0 8px 34px;
+  transform: translateY(100%); transition: transform .3s cubic-bezier(.22,1,.36,1);
+}
+.as-overlay.show .as-sheet { transform: translateY(0); }
+.as-group {
+  background: rgba(255,255,255,.88); backdrop-filter: blur(20px);
+  border-radius: 14px; overflow: hidden; margin-bottom: 8px;
+}
+.as-group .as-item {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px; font-size: 18px; color: #007aff; font-weight: 500;
+  border: none; background: none; width: 100%; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.as-group .as-item + .as-item { border-top: .5px solid rgba(0,0,0,.12); }
+.as-group .as-item:active { background: rgba(0,0,0,.06); }
+.as-cancel { font-weight: 600; }
+
+/* Details — default open */
+.details {
+  margin-top: 10px; padding-top: 10px;
+  border-top: .5px solid var(--separator);
+  font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+}
+.details.closed { display: none; }
+
+/* ── Overview day list ── */
+.day-list .card { margin-bottom: 8px; }
+.day-list .card .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+/* ── Payment summary ── */
+.pay-summary { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-sm); font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+.pay-summary h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.pay-summary .warn { color: var(--tint-red); }
+.pay-summary .ok-text { color: var(--tint-green); }
+
+/* ── Legend ── */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 8px 0; font-size: 12px; color: var(--text-secondary); }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── Leaflet overrides ── */
+.leaflet-popup-content-wrapper { border-radius: var(--radius-md) !important; box-shadow: var(--shadow-lg) !important; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif !important; }
+.leaflet-popup-content { font-size: 14px !important; line-height: 1.5 !important; margin: 12px 14px !important; }
+.leaflet-popup-content a { color: var(--accent) !important; }
+.leaflet-popup-tip { background: #fff !important; }
+.leaflet-control-zoom a { width: 34px !important; height: 34px !important; line-height: 34px !important; font-size: 16px !important; border-radius: 10px !important; background: rgba(255,255,255,.85) !important; -webkit-backdrop-filter: blur(10px) !important; backdrop-filter: blur(10px) !important; border: .5px solid var(--separator) !important; color: var(--text-primary) !important; }
+.leaflet-control-zoom { border-radius: 12px !important; overflow: hidden; box-shadow: var(--shadow-md) !important; border: none !important; }
+.leaflet-control-attribution { font-size: 9px !important; opacity: .5; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  TRIP DATA — Jiangxi 7.5 Days                               ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+const HOTEL = { name: '南昌（八一广场附近）', lat: 28.673, lng: 115.895 };
+
+/* Color palette per day */
+const C = ['#0071e3','#ff9500','#af52de','#007aff','#34c759','#ff2d55','#ff9500','#5856d6'];
+
+const DAYS = [
+  { id: 0, label: '总览', color: C[0], locations: [] },
+  {
+    id: 1, label: 'D1 南昌', color: C[1], date: '8月2日（六）', title: '南昌 · 滕王阁',
+    locations: [
+      {
+        name: '滕王阁',
+        lat: 28.6837, lng: 115.8754,
+        type: 'spot', time: '14:00',
+        desc: '江南三大名楼之一，落霞与孤鹜齐飞',
+        budget: '门票 50 元',
+        detail: '登顶可看赣江全景，建议游玩 1.5h\n暑期较晒，做好防晒',
+        gmap: '滕王阁'
+      },
+      {
+        name: '万寿宫历史文化街区',
+        lat: 28.6770, lng: 115.8810,
+        type: 'spot', time: '16:00',
+        desc: '老南昌风貌街区，免费逛',
+        gmap: '南昌万寿宫历史文化街区'
+      },
+      {
+        name: '绳金塔美食街',
+        lat: 28.6650, lng: 115.8850,
+        type: 'food', time: '18:00',
+        desc: '南昌小吃汇集地：拌粉、瓦罐汤、白糖糕',
+        budget: '50-80 元/人',
+        detail: '推荐：老五汤店、民间饭庄\n拌粉+瓦罐汤约 20 元',
+        gmap: '绳金塔美食街'
+      },
+      {
+        name: '八一广场',
+        lat: 28.6715, lng: 115.8955,
+        type: 'spot', time: '20:00',
+        desc: '南昌地标，夜景灯光',
+        gmap: '八一广场'
+      }
+    ]
+  },
+  {
+    id: 2, label: 'D2 南昌→景德镇', color: C[2], date: '8月3日（日）', title: '南昌 → 景德镇',
+    locations: [
+      {
+        name: '江西省博物馆',
+        lat: 28.6889, lng: 115.8638,
+        type: 'spot', time: '09:00',
+        desc: '海昏侯出土文物，镇馆之宝',
+        budget: '免费（需预约）',
+        detail: '微信公众号预约\n重点看海昏侯展厅和江西古代文明展',
+        gmap: '江西省博物馆新馆'
+      },
+      {
+        name: '南昌站 → 景德镇北站',
+        lat: 28.6520, lng: 115.9150,
+        type: 'transport', time: '13:00',
+        desc: '高铁约 2.5h，票价约 120 元',
+        detail: '车次密集，当天买即可\n建议 G1644 或相近车次',
+        gmap: '南昌站'
+      },
+      {
+        name: '陶溪川文创街区',
+        lat: 29.2960, lng: 117.2250,
+        type: 'spot', time: '17:00',
+        desc: '老瓷厂改造，夜景绝佳',
+        budget: '免费',
+        detail: '傍晚逛最好看\n🎪 创意集市 17:00-21:30（周日有！五/六/日开）\n内有餐饮和陶瓷店',
+        gmap: '陶溪川文创街区'
+      }
+    ]
+  },
+  {
+    id: 3, label: 'D3 景德镇', color: C[3], date: '8月4日（一）', title: '景德镇 · 陶瓷日',
+    locations: [
+      {
+        name: '中国陶瓷博物馆',
+        lat: 29.2785, lng: 117.2001,
+        type: 'spot', time: '08:30',
+        desc: '从五代到现代，完整的陶瓷史',
+        budget: '免费（需预约）',
+        detail: '微信公众号预约\n必看：元青花、明成化鸡缸杯\n建议游玩 2-3h',
+        gmap: '景德镇中国陶瓷博物馆'
+      },
+      {
+        name: '🐟 图味美小黄鱼·景德菜（浙江路店）',
+        lat: 29.2935, lng: 117.2138,
+        type: 'food', time: '12:00',
+        desc: '景德镇必吃！招牌小黄鱼酥脆鲜辣',
+        budget: '人均 60-75 元',
+        detail: '推荐：招牌小黄鱼（炸后再炒）、特色三爪煲\n浙江路与广场南路交叉口东80米，离博物馆约 2km\n打车或步行前往，饭点常排队建议早去\n营业时间：11:00-14:00 / 16:30-21:00',
+        xhsKeyword: '图味美小黄鱼 景德镇',
+        dianping: true,
+        gmap: '图味美小黄鱼景德菜浙江路店'
+      },
+      {
+        name: '陶瓷DIY体验（三宝/乐天）',
+        lat: 29.2660, lng: 117.2600,
+        type: 'spot', time: '13:30',
+        desc: '亲手拉坯/捏塑，感受陶艺',
+        budget: '150-200 元/人',
+        detail: '推荐：三宝陶艺村或乐天陶社\n建议提前 2 天预约\n成品可邮寄到家（约 2 周）',
+        reserve: '#',
+        gmap: '三宝陶艺村'
+      },
+      {
+        name: '御窑厂遗址',
+        lat: 29.2991, lng: 117.2248,
+        type: 'spot', time: '16:30',
+        desc: '明清皇家瓷厂遗址',
+        budget: '免费',
+        gmap: '御窑厂国家考古遗址公园'
+      },
+      {
+        name: '💄 汉服妆造体验（陶溪川/御窑厂）',
+        lat: 29.2970, lng: 117.2250,
+        type: 'dress', time: '17:30',
+        desc: '💡 推荐做宋制汉服或民国旗袍妆造',
+        budget: '妆造+租赁约 200-400 元',
+        detail: '【推荐理由】御窑厂红砖拱形建筑+瓷器展厅，搭配宋制汉服（淡雅风）或民国风旗袍，色调绝配！\n\n陶溪川和御窑厂附近有多家汉服体验馆\n建议提前预约妆造（约 1-1.5h 化妆+造型）\n弄好后正好去陶艺街和陶溪川拍夜景📸',
+        xhsKeyword: '景德镇汉服妆造体验',
+        gmap: '景德镇陶溪川'
+      },
+      {
+        name: '陶艺街',
+        lat: 29.2920, lng: 117.2290,
+        type: 'spot', time: '19:30',
+        desc: '买陶瓷手信的好去处',
+        gmap: '景德镇陶艺街'
+      }
+    ]
+  },
+  {
+    id: 4, label: 'D4 景德镇→婺源', color: C[4], date: '8月5日（二）', title: '景德镇 → 婺源',
+    locations: [
+      {
+        name: '古窑民俗博览区',
+        lat: 29.2600, lng: 117.2189,
+        type: 'spot', time: '08:30',
+        desc: '看老匠人手拉坯，古法陶瓷制作',
+        budget: '门票 85 元',
+        gmap: '古窑民俗博览区'
+      },
+      {
+        name: '景德镇北站 → 婺源站',
+        lat: 29.3400, lng: 117.2630,
+        type: 'transport', time: '13:30',
+        desc: '高铁仅 30min，票价约 24 元',
+        gmap: '景德镇北站'
+      },
+      {
+        name: '李坑古村',
+        lat: 29.3150, lng: 117.8350,
+        type: 'spot', time: '15:30',
+        desc: '小桥流水人家，徽派古村落',
+        budget: '门票 55 元',
+        detail: '建议游玩 1.5h\n傍晚光线最好拍照',
+        gmap: '婺源李坑'
+      },
+      {
+        name: '月亮湾',
+        lat: 29.3360, lng: 117.7910,
+        type: 'spot', time: '17:30',
+        desc: '摄影胜地，拍渔舟晚唱',
+        budget: '免费',
+        detail: '最佳观景点在路边山坡上\n日落时分光影最美',
+        gmap: '月亮湾婺源'
+      }
+    ]
+  },
+  {
+    id: 5, label: 'D5 婺源', color: C[5], date: '8月6日（三）', title: '婺源 · 漂流/卧龙谷 + 篁岭',
+    locations: [
+      {
+        name: '石门峡·人体漂流',
+        lat: 29.3150, lng: 117.9050,
+        type: 'spot', time: '08:30',
+        desc: '穿救生衣顺溪而下，夏季超爽！',
+        budget: '石门峡+篁岭联票',
+        detail: '带泳衣/速干衣、防水袋、拖鞋\n景区有淋浴设施可冲洗\n与篁岭相距 2.5km，免费接驳',
+        gmap: '篁岭石门峡'
+      },
+      {
+        name: '☔ 大鄣山卧龙谷（雨天备选）',
+        lat: 29.4550, lng: 117.7200,
+        type: 'spot', time: '—',
+        desc: '雨后瀑布群最壮观，石门峡停漂时替代',
+        budget: '门票 55 元',
+        detail: '距婺源县城约 30km，打车约 50 元\n山谷步道有廊亭避雨，雨后瀑布水量最大\n游玩约 2-3h，不影响下午去篁岭',
+        gmap: '大鄣山卧龙谷'
+      },
+      {
+        name: '篁岭（索道上山）',
+        lat: 29.3060, lng: 117.9198,
+        type: 'spot', time: '12:30',
+        desc: '晒秋人家 + 天街古村 + 垒心桥',
+        budget: '门票+索道约 145 元',
+        detail: '篁岭石门峡有联票\n天街逛约 1-2h\n垒心桥玻璃栈道→梯田索道下山\n整体游玩 3-4h',
+        gmap: '婺源篁岭景区'
+      },
+      {
+        name: '💄 篁岭·古风田园妆造',
+        lat: 29.3060, lng: 117.9200,
+        type: 'dress', time: '14:00',
+        desc: '💡 推荐田园古风/新中式，晒秋作背景',
+        budget: '妆造+租赁约 150-300 元',
+        detail: '【推荐理由】篁岭天街古村+晒秋五彩斑斓，搭配田园风古装或新中式穿搭，出片率极高！\n\n篁岭天街上有汉服体验馆，不用出景区\n索道上下山方便，穿汉服也不累\n建议化好妆后在天街→垒心桥一线拍照📸',
+        xhsKeyword: '婺源篁岭汉服拍照',
+        gmap: '婺源篁岭景区'
+      }
+    ]
+  },
+  {
+    id: 6, label: 'D6 三清山→葛仙村', color: C[6], date: '8月7日（四）', title: '三清山 → 葛仙村',
+    locations: [
+      {
+        name: '三清山·金沙索道',
+        lat: 28.9100, lng: 118.0790,
+        type: 'spot', time: '07:30',
+        desc: '世界遗产，奇峰怪石云海',
+        budget: '门票+索道约 245 元',
+        detail: '【推荐路线】金沙索道↑→巨蟒出山→东方女神→阳光海岸(乾坤台)→三清宫→西海岸栈道(1600m悬崖步道)→金沙索道↓\n全程约 5-6h，栈道为主较省力\n\n💡 港首索道（2025新开）下山不排队：\n金沙索道上→南清园→阳光海岸→三清宫→港首索道下\n免费班车15分钟回金沙\n\n⚠️ 建议自备干粮和水·山顶温差大带外套·穿防滑鞋',
+        gmap: '三清山金沙索道'
+      },
+      {
+        name: '💄 三清山·仙侠风妆造',
+        lat: 28.9110, lng: 118.0700,
+        type: 'dress', time: '08:30',
+        desc: '💡 推荐仙侠风/道教风白衣青衫',
+        budget: '自带或山下租赁',
+        detail: '【推荐理由】三清山是道教名山，花岗岩峰林+云海=天然仙侠片场！在巨蟒出山和西海岸栈道拍照，仙气飘飘\n\n⚠️ 爬山穿汉服较累→建议穿轻便古风（简化头饰）或只带服装到山顶观景台换装\n在南清园核心区(女神峰附近)拍完再换回便装继续走',
+        xhsKeyword: '三清山汉服拍照',
+        gmap: '三清山南清园'
+      },
+      {
+        name: '三清山·西海岸栈道',
+        lat: 28.9120, lng: 118.0600,
+        type: 'spot', time: '10:00',
+        desc: '悬崖栈道，视野极佳',
+        gmap: '三清山西海岸'
+      },
+      {
+        name: '葛仙村度假区',
+        lat: 28.0650, lng: 117.7050,
+        type: 'hotel', time: '18:00',
+        desc: '夜宿仙境，看灯光秀',
+        budget: '住宿 300-500 元',
+        detail: '三清山→葛仙村包车约 2.5-3h（约 300-400 元）\n葛仙村夜景灯光秀是精华\n提前订好村内住宿',
+        gmap: '葛仙村度假区'
+      }
+    ]
+  },
+  {
+    id: 7, label: 'D7 葛仙村→机场', color: C[7], date: '8月8日（五）', title: '葛仙村 → 上饶机场',
+    locations: [
+      {
+        name: '葛仙村晨间漫步',
+        lat: 28.0650, lng: 117.7050,
+        type: 'spot', time: '08:00',
+        desc: '白天逛葛仙祠/道教文化区',
+        gmap: '葛仙村度假区'
+      },
+      {
+        name: '上饶三清山机场',
+        lat: 28.4450, lng: 117.9530,
+        type: 'transport', time: '09:30',
+        desc: '葛仙村→机场约 40min，包车约 80 元',
+        detail: '11:30 飞北京，提前 1.5h 到',
+        gmap: '上饶三清山机场'
+      }
+    ]
+  }
+];
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  OVERVIEW CONTENT                                           ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+function overviewContent() {
+  return `
+<div class="hero"><h1>江西 7 天半</h1><p class="subtitle">南昌 → 景德镇 → 婺源 → 三清山 → 葛仙村</p></div>
+<div class="info-grid">
+  <div class="info-card"><div class="label">路线</div><div class="value">🏯 南昌 → 🏺 景德镇 → 🏘️ 婺源 → ⛰️ 三清山 → 🌃 葛仙村</div></div>
+  <div class="info-card"><div class="label">时间</div><div class="value">📅 8/2（六）00:45 → 8/8（五）11:30</div></div>
+  <div class="info-card"><div class="label">交通</div><div class="value">🚄 高铁 + 🚗 包车 + ✈️ 飞机</div></div>
+  <div class="info-card"><div class="label">预算</div><div class="value">💰 约 3,300-4,700 元/人</div></div>
+</div>
+<div class="section-head">行程概览</div>
+<div class="day-list">${DAYS.slice(1).map(d=>`<div class="card" onclick="go(${d.id})"><div class="name"><span class="dot" style="background:${d.color}"></span>${d.label} · ${d.title}</div><div class="desc">${d.date}</div></div>`).join('')}</div>
+<div class="section-head">💄 妆造建议一览</div>
+<div class="pay-summary" style="background:rgba(255,45,85,.04);border:1px solid rgba(255,45,85,.15)">
+  <h4>📸 三天妆造推荐</h4>
+  <strong>D3 景德镇·汉服/旗袍妆造</strong> — 御窑厂+陶溪川，宋制淡雅风配瓷器背景 🏺<br>
+  <strong>D5 婺源·田园古风妆造</strong> — 篁岭天街晒秋，新中式田园风格 🌾<br>
+  <strong>D6 三清山·仙侠风妆造</strong> — 西海岸悬崖云海，白衣青衫仙气飘飘 ⛰️<br>
+  <span style="color:var(--tint-pink)">💡 每个地点都有妆造店可租赁，提前1天预约</span>
+</div>
+<div class="section-head">支付提醒</div>
+<div class="pay-summary">
+  <h4>💳 支付方式</h4>
+  <span class="ok-text">✅ 微信支付 / 支付宝</span> 基本覆盖所有场景<br>
+  <span class="ok-text">✅ 现金</span> 建议备 500 元零钱（小摊/缆车）<br>
+  <span class="warn">⚠️ 三清山山上信号可能不稳定，备现金</span>
+</div>
+<div class="section-head">图例</div>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tint-red)"></div>餐厅</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tint-blue)"></div>景点</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tint-orange)"></div>酒店</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--text-tertiary)"></div>交通</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tint-pink)"></div>妆造</div>
+</div>`;
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  ENGINE                                                     ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+const map = L.map('map', { center: [28.68, 116.2], zoom: 8, zoomControl: false, attributionControl: true });
+L.control.zoom({ position: 'topright' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+
+/* ── Geolocation ── */
+const LocateControl = L.Control.extend({
+  options: { position: 'bottomright' },
+  onAdd() {
+    const btn = L.DomUtil.create('button', 'locate-btn');
+    btn.innerHTML = '📍';
+    btn.title = '我的位置';
+    L.DomEvent.disableClickPropagation(btn);
+    btn.addEventListener('click', () => {
+      btn.classList.add('active');
+      map.locate({ setView: true, maxZoom: 15 });
+    });
+    this._btn = btn;
+    return btn;
+  }
+});
+new LocateControl().addTo(map);
+let locMarker, locCircle;
+map.on('locationfound', e => {
+  const r = e.accuracy / 2;
+  if (locMarker) { locMarker.setLatLng(e.latlng); locCircle.setLatLng(e.latlng).setRadius(r); }
+  else {
+    locMarker = L.marker(e.latlng, {
+      icon: L.divIcon({ className:'', html:'<div style="width:14px;height:14px;border-radius:50%;background:#007aff;border:2.5px solid #fff;box-shadow:0 0 6px rgba(0,122,255,.5)"></div><div class="loc-pulse" style="position:absolute;top:0;left:0"></div>', iconSize:[14,14], iconAnchor:[7,7] }),
+      zIndexOffset: 2000
+    }).addTo(map);
+    locCircle = L.circle(e.latlng, { radius: r, color: '#007aff', fillColor: '#007aff', fillOpacity: .08, weight: 1 }).addTo(map);
+  }
+});
+map.on('locationerror', () => {});
+
+function icon(color, emoji) {
+  return L.divIcon({ className: '', html: `<div style="width:28px;height:28px;border-radius:50%;background:${color};border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.18)">${emoji||''}</div>`, iconSize: [28,28], iconAnchor: [14,14], popupAnchor: [0,-16] });
+}
+
+// Hotel marker (Nanchang)
+L.marker([HOTEL.lat, HOTEL.lng], { icon: icon('#ff9500','🏨'), zIndexOffset: 1000 }).addTo(map).bindPopup(`<b>${HOTEL.name}</b>`);
+
+let markers = [], polylines = [];
+const emojis = { food:'🍽️', spot:'📍', hotel:'🏨', transport:'🚃', drink:'🍺', dress:'💄' };
+
+function clearMap() { markers.forEach(m=>map.removeLayer(m)); polylines.forEach(p=>map.removeLayer(p)); markers=[]; polylines=[]; }
+
+function showDay(idx) {
+  clearMap();
+  if (idx === 0) {
+    const pts = [];
+    DAYS.forEach(d => d.locations.forEach(l => { if(l.lat) pts.push([l.lat,l.lng]); }));
+    if(pts.length) map.fitBounds(pts, {padding:[30,30]});
+    DAYS.slice(1).forEach(d => {
+      d.locations.filter(l=>l.time!=='—').forEach(l => {
+        const m = L.circleMarker([l.lat,l.lng], { radius:4, fillColor:d.color, color:'#fff', weight:1.5, fillOpacity:.9 }).addTo(map).bindPopup(`<b>${l.name}</b><br><span style="color:#86868b">${d.label}</span>`);
+        markers.push(m);
+      });
+    });
+    return;
+  }
+  const day = DAYS.find(d=>d.id===idx);
+  if(!day) return;
+  const coords = [];
+  day.locations.forEach(l => {
+    if(!l.lat) return;
+    const m = L.marker([l.lat,l.lng], { icon: icon(day.color, emojis[l.type]||'📌') }).addTo(map);
+    const gmapQ = l.gmap||encodeURIComponent(l.name+' Jiangxi');
+    m.bindPopup(`<b>${l.name}</b>${l.time!=='—'?'<br><span style="color:#86868b">'+l.time+'</span>':''}<br>${l.desc}${l.budget?'<br><span style="color:#ff9500">'+l.budget+'</span>':''}<br><a href="#" onclick="event.preventDefault();openAS('${l.name.replace(/'/g,"\\'")}',${l.lat},${l.lng},'${gmapQ}')">📍 导航</a>`);
+    markers.push(m);
+    if(l.time!=='—') coords.push([l.lat,l.lng]);
+  });
+  if(coords.length>1) { const pl = L.polyline(coords, { color:day.color, weight:2.5, opacity:.5, dashArray:'6,5' }).addTo(map); polylines.push(pl); }
+  if(coords.length) map.fitBounds(coords, { padding:[40,40], maxZoom:14 });
+}
+
+// ══════════ RENDER ══════════
+function payChips(pay) {
+  if(!pay) return '';
+  let h = '<div class="pays">';
+  const m = { cash:'💴', card:'💳', suica:'Suica', paypay:'PayPay', alipay:'支付宝', wechat:'微信' };
+  for(const [k,label] of Object.entries(m)) {
+    if(pay[k]!==undefined) { const c = pay[k]===1?'ok':pay[k]===0.5?'idk':'no'; h += `<span class="pay ${c}">${label}</span>`; }
+  }
+  return h+'</div>';
+}
+
+const IN_APP_WEBVIEW = (() => {
+  const ua = (navigator.userAgent || '').toLowerCase();
+  return /micromessenger|xhs|xhsdiscover|discover\/|tiktok|aweme|weibo|qq\/|qqbrowser|alipayclient|dingtalk|lark|feishu|ucbrowser|baiduboxapp|toutiao|newsarticle/.test(ua);
+})();
+
+function xhsKeyword(loc) {
+  if(loc.xhsKeyword) return loc.xhsKeyword.trim();
+  return (loc.name||'').replace(/⭐.*$/g,'').replace(/（.*?）/g,'').replace(/\(.*?\)/g,'').replace(/\s+/g,' ').trim();
+}
+function xhsAppUrl(loc) { return `xhsdiscover://search/result?keyword=${encodeURIComponent(xhsKeyword(loc))}&target_search=notes&source=deeplink`; }
+function xhsWebUrl(loc) { return `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(xhsKeyword(loc))}&source=web_explore_feed`; }
+
+function dpKeyword(loc) {
+  if(loc.dianpingKeyword) return loc.dianpingKeyword.trim();
+  return (loc.name||'').replace(/⭐.*$/g,'').replace(/（.*?）/g,'').replace(/\(.*?\)/g,'').replace(/\s+/g,' ').trim();
+}
+function dpAppUrl(loc) { return `dianping://searchshoplist?keyword=${encodeURIComponent(dpKeyword(loc))}`; }
+function dpWebUrl(loc) { return `https://m.dianping.com/searchshop?keyword=${encodeURIComponent(dpKeyword(loc))}`; }
+
+window._extLocs = {};
+DAYS.forEach(d => d.locations.forEach(l => { window._extLocs[`${d.id}::${l.name}`] = l; }));
+window._xhsLocs = window._extLocs;
+
+function openExt(key, kind) {
+  const loc = window._extLocs[key]; if(!loc) return false;
+  if (IN_APP_WEBVIEW) {
+    window.location.href = kind==='dp' ? dpWebUrl(loc) : xhsWebUrl(loc);
+  } else {
+    window.location.href = kind==='dp' ? dpAppUrl(loc) : xhsAppUrl(loc);
+  }
+  return false;
+}
+function openXhs(key) { return openExt(key, 'xhs'); }
+function openDp(key)  { return openExt(key, 'dp'); }
+
+function locCard(loc, dayIdx) {
+  const dot = loc.type==='food'?'food':loc.type==='spot'?'spot':loc.type==='drink'?'drink':loc.type==='dress'?'dress':loc.type==='hotel'?'hotel':'transport';
+  const bdg = loc.type==='food'?'<span class="badge food">餐</span>':loc.type==='spot'?'<span class="badge spot">景</span>':loc.type==='drink'?'<span class="badge drink">饮</span>':loc.type==='dress'?'<span class="badge dress">妆</span>':'';
+  const uid = `d${dayIdx}-${loc.name.replace(/\W/g,'')}`;
+  const locKey = `${dayIdx}::${loc.name}`;
+  const gmapQ = loc.gmap||encodeURIComponent(loc.name+' Jiangxi');
+  let lnk = `<button class="btn nav" onclick="openAS('${loc.name.replace(/'/g,"\\'")}',${loc.lat},${loc.lng},'${gmapQ}')">📍 导航</button>`;
+  if(loc.xhs||loc.xhsKeyword) {
+    const xhsHref = IN_APP_WEBVIEW ? xhsWebUrl(loc) : xhsAppUrl(loc);
+    const xhsLabel = IN_APP_WEBVIEW ? '📕 小红书' : '📕 小红书 App';
+    lnk += `<a href="${xhsHref}" onclick="return openXhs('${locKey.replace(/'/g,"\\'")}')" class="btn xhs">${xhsLabel}</a>`;
+  }
+  const dpEnabled = loc.dianping !== false &&
+    (loc.dianping || loc.dianpingKeyword || loc.type==='food' || loc.type==='drink');
+  if(dpEnabled) {
+    const dpHref = IN_APP_WEBVIEW ? dpWebUrl(loc) : dpAppUrl(loc);
+    const dpLabel = IN_APP_WEBVIEW ? '🍜 大众点评' : '🍜 大众点评 App';
+    lnk += `<a href="${dpHref}" onclick="return openDp('${locKey.replace(/'/g,"\\'")}')" class="btn dp">${dpLabel}</a>`;
+  }
+  if(loc.reserve) lnk += `<a href="${loc.reserve}" target="_blank" class="btn rsv">📅 预约</a>`;
+  return `<div class="tl-item"><div class="tl-dot ${dot}"></div><div class="card" onclick="if(!event.target.closest('.btn,.links'))toggle('${uid}')"><div class="time">${loc.time!=='—'?loc.time:'备选'}</div><div class="name">${bdg} ${loc.name}</div><div class="desc">${loc.desc}</div>${loc.budget?'<div class="budget">'+loc.budget+'</div>':''}${payChips(loc.pay)}<div class="links">${lnk}</div>${loc.detail?'<div class="details" id="'+uid+'">'+loc.detail.replace(/\n/g,'<br>')+'</div>':''}</div></div>`;
+}
+
+function renderDay(idx) {
+  const d = DAYS.find(x=>x.id===idx); if(!d) return '';
+  const main = d.locations.filter(l=>l.time!=='—');
+  const alt = d.locations.filter(l=>l.time==='—');
+  let h = `<div class="day-head"><h2>${d.title}</h2><p>${d.date}</p></div>`;
+  if(main.length) { h += '<div class="section-head">行程</div><div class="timeline">'; main.forEach(l => h += locCard(l, idx)); h += '</div>'; }
+  if(alt.length) { h += '<div class="section-head">备选</div><div class="timeline">'; alt.forEach(l => h += locCard(l, idx)); h += '</div>'; }
+  return h;
+}
+
+// ══════════ NAV ══════════
+let cur = 0;
+const tabsEl = document.getElementById('tabs');
+const contentEl = document.getElementById('content');
+
+DAYS.forEach(d => {
+  const btn = document.createElement('button');
+  btn.className = 'tab' + (d.id===0?' active':'');
+  btn.dataset.day = d.id;
+  btn.textContent = d.label;
+  tabsEl.appendChild(btn);
+});
+
+function go(idx) {
+  cur = idx;
+  tabsEl.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', +t.dataset.day===idx));
+  contentEl.innerHTML = idx===0 ? overviewContent() : renderDay(idx);
+  showDay(idx);
+  contentEl.scrollTo({top:0});
+  const tab = tabsEl.querySelector(`[data-day="${idx}"]`);
+  if(tab) tab.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+}
+
+function toggle(id) { const el=document.getElementById(id); if(el) el.classList.toggle('closed'); }
+
+tabsEl.addEventListener('click', e => { const t=e.target.closest('.tab'); if(t) go(+t.dataset.day); });
+
+go(0);
+
+/* ── Action Sheet for Navigation ── */
+const asOverlay = document.createElement('div');
+asOverlay.className = 'as-overlay';
+asOverlay.innerHTML = `<div class="as-sheet">
+  <div class="as-group" id="as-opts"></div>
+  <div class="as-group"><button class="as-item as-cancel" onclick="closeAS()">取消</button></div>
+</div>`;
+document.body.appendChild(asOverlay);
+asOverlay.addEventListener('click', e => { if (e.target === asOverlay) closeAS(); });
+
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+function amapAppUrl(name, lat, lng) {
+  const scheme = IS_IOS ? 'iosamap' : 'androidamap';
+  return `${scheme}://viewMap?sourceApplication=trip&poiname=${encodeURIComponent(name)}&lat=${lat}&lon=${lng}&dev=0`;
+}
+function amapWebUrl(name, lat, lng) {
+  return `https://uri.amap.com/marker?position=${lng},${lat}&name=${encodeURIComponent(name)}&src=trip&coordinate=wgs84&callnative=1`;
+}
+function openAmap(name, lat, lng) {
+  if (IN_APP_WEBVIEW) { window.open(amapWebUrl(name, lat, lng)); return; }
+  window.location.href = amapAppUrl(name, lat, lng);
+}
+
+function openAS(name, lat, lng, gmap) {
+  const q = gmap || encodeURIComponent(name + ' Jiangxi');
+  const encName = encodeURIComponent(name);
+  const safeName = name.replace(/'/g,"\\'");
+  const appleUrl = IN_APP_WEBVIEW
+    ? `https://maps.apple.com/?q=${lat},${lng}&ll=${lat},${lng}&name=${encName}`
+    : `maps://maps.apple.com/?q=${lat},${lng}&name=${encName}`;
+  const googleUrl = `https://www.google.com/maps/search/?api=1&query=${q}`;
+  document.getElementById('as-opts').innerHTML =
+    `<button class="as-item" onclick="window.open('${appleUrl}');closeAS()">🍎 Apple Maps</button>` +
+    `<button class="as-item" onclick="window.open('${googleUrl}');closeAS()">🗺️ Google Maps</button>` +
+    `<button class="as-item" onclick="openAmap('${safeName}',${lat},${lng});closeAS()">🧭 高德地图 App</button>`;
+  asOverlay.classList.add('show');
+}
+function closeAS() { asOverlay.classList.remove('show'); }
+</script>
+</body>
+</html>
