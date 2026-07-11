@@ -280,6 +280,15 @@ const DAYS = [
         type: 'spot', time: '20:00',
         desc: '南昌地标，夜景灯光',
         gmap: '八一广场'
+      },
+      {
+        name: '🏨 住：八一广场 / 滕王阁附近',
+        lat: 28.6740, lng: 115.8930,
+        type: 'hotel', time: '—',
+        desc: '老城区中心，到滕王阁和万寿宫步行可达',
+        budget: '200-400 元/晚',
+        detail: '八一广场附近交通最方便\n建议在美团/携程搜"八一广场"或"滕王阁"区域\n明早去省博物馆打车约 10min',
+        gmap: '南昌八一广场'
       }
     ]
   },
@@ -311,6 +320,15 @@ const DAYS = [
         budget: '免费',
         detail: '傍晚逛最好看\n🎪 创意集市 17:00-21:30（周日有！五/六/日开）\n内有餐饮和陶瓷店',
         gmap: '陶溪川文创街区'
+      },
+      {
+        name: '🏨 住：陶溪川 / 人民广场附近',
+        lat: 29.2940, lng: 117.2200,
+        type: 'hotel', time: '—',
+        desc: '景德镇市中心，离陶溪川和御窑厂都近',
+        budget: '200-400 元/晚',
+        detail: '陶溪川周边民宿最有特色\n人民广场附近酒店性价比高\n明后两晚都住这里（D2+D3 连住两晚）',
+        gmap: '景德镇陶溪川'
       }
     ]
   },
@@ -371,11 +389,20 @@ const DAYS = [
         type: 'spot', time: '19:30',
         desc: '买陶瓷手信的好去处',
         gmap: '景德镇陶艺街'
+      },
+      {
+        name: '🏨 续住：陶溪川附近（同D2酒店）',
+        lat: 29.2940, lng: 117.2200,
+        type: 'hotel', time: '—',
+        desc: '连住两晚，行李不用搬',
+        budget: '—',
+        detail: 'D2 和 D3 住同一家酒店，方便省心\n明早退房后行李可寄存前台\n下午直接从景德镇北站去婺源',
+        gmap: '景德镇陶溪川'
       }
     ]
   },
   {
-    id: 4, label: 'D4 景德镇→婺源', color: C[4], date: '8月5日（二）', title: '景德镇 → 婺源',
+    id: 4, label: 'D4 景德镇→婺源', color: C[4], date: '8月5日（二）', title: '景德镇 → 婺源 · 婺女洲夜景',
     locations: [
       {
         name: '古窑民俗博览区',
@@ -409,6 +436,25 @@ const DAYS = [
         budget: '免费',
         detail: '最佳观景点在路边山坡上\n日落时分光影最美',
         gmap: '月亮湾婺源'
+      },
+      {
+        name: '🎆 婺女洲度假区（夜景）',
+        lat: 29.3410, lng: 117.8390,
+        type: 'spot', time: '19:00',
+        desc: '徽州不夜城，看打铁花+灯光秀',
+        budget: '夜游票约 60 元',
+        detail: '【必看演出】🎆 19:10 非遗打铁花 · 🎭 20:00《遇见·婺源》实景演出 · 🎇 21:00 无人机秀\n\n位于婺源县城旁，月亮湾打车约 10min\n建议 19:00 前到，先逛徽市街→抱玉塔→金阁\n摇橹船夜游约 60 元/30min\n\n⚠️ 雨天室外表演可能取消',
+        xhsKeyword: '婺女洲夜景攻略',
+        gmap: '婺女洲度假区'
+      },
+      {
+        name: '🏨 住：婺源县城 / 婺女洲附近',
+        lat: 29.3450, lng: 117.8450,
+        type: 'hotel', time: '—',
+        desc: '推荐在婺源县城中心或婺女洲周边订房',
+        budget: '200-400 元/晚',
+        detail: '婺源高铁站附近也有很多酒店\n住县城去篁岭和第二天漂流都方便\n婺女洲内也有住宿（含门票套餐约 558 元起）',
+        gmap: '婺源'
       }
     ]
   },
@@ -451,6 +497,15 @@ const DAYS = [
         detail: '【推荐理由】篁岭天街古村+晒秋五彩斑斓，搭配田园风古装或新中式穿搭，出片率极高！\n\n篁岭天街上有汉服体验馆，不用出景区\n索道上下山方便，穿汉服也不累\n建议化好妆后在天街→垒心桥一线拍照📸',
         xhsKeyword: '婺源篁岭汉服拍照',
         gmap: '婺源篁岭景区'
+      },
+      {
+        name: '🏨 住：篁岭脚下 / 江湾镇（近三清山）',
+        lat: 29.3080, lng: 117.9280,
+        type: 'hotel', time: '—',
+        desc: '推荐住篁岭山下或江湾镇，明早直奔三清山',
+        budget: '200-350 元/晚',
+        detail: '篁岭山下有很多民宿，方便早起\n江湾镇在篁岭去三清山的路上，包车更顺路\n建议让民宿老板帮忙联系明早去三清山的包车（约 150-200 元）',
+        gmap: '婺源篁岭'
       }
     ]
   },
@@ -522,15 +577,25 @@ const DAYS = [
 
 function overviewContent() {
   return `
-<div class="hero"><h1>江西 7 天半</h1><p class="subtitle">南昌 → 景德镇 → 婺源 → 三清山 → 葛仙村</p></div>
+<div class="hero"><h1>江西 7 天半</h1><p class="subtitle">南昌→景德镇→婺源·婺女洲→三清山→葛仙村</p></div>
 <div class="info-grid">
-  <div class="info-card"><div class="label">路线</div><div class="value">🏯 南昌 → 🏺 景德镇 → 🏘️ 婺源 → ⛰️ 三清山 → 🌃 葛仙村</div></div>
+  <div class="info-card"><div class="label">路线</div><div class="value">🏯 南昌 → 🏺 景德镇 → 🏘️ 婺源·🎆婺女洲 → ⛰️ 三清山 → 🌃 葛仙村</div></div>
   <div class="info-card"><div class="label">时间</div><div class="value">📅 8/2（六）00:45 → 8/8（五）11:30</div></div>
   <div class="info-card"><div class="label">交通</div><div class="value">🚄 高铁 + 🚗 包车 + ✈️ 飞机</div></div>
   <div class="info-card"><div class="label">预算</div><div class="value">💰 约 3,300-4,700 元/人</div></div>
 </div>
 <div class="section-head">行程概览</div>
 <div class="day-list">${DAYS.slice(1).map(d=>`<div class="card" onclick="go(${d.id})"><div class="name"><span class="dot" style="background:${d.color}"></span>${d.label} · ${d.title}</div><div class="desc">${d.date}</div></div>`).join('')}</div>
+<div class="section-head">🏨 住宿区域速查</div>
+<div class="pay-summary">
+  <h4>📍 每天住哪片区域（在地图App搜关键词）</h4>
+  <strong>D1 南昌</strong> → 搜"八一广场"或"滕王阁"附近 🏯<br>
+  <strong>D2+D3 景德镇</strong> → 搜"陶溪川"或"人民广场"附近 🏺<br>
+  <strong>D4 婺源</strong> → 搜"婺源县城"或"婺女洲"附近 🎆<br>
+  <strong>D5 婺源</strong> → 搜"篁岭"或"江湾镇"（近三清山）🏘️<br>
+  <strong>D6 葛仙村</strong> → 搜"葛仙村度假区"（住景区内）🌃<br>
+  <span style="color:var(--tint-orange)">💡 建议选可免费取消的房型，灵活应对天气变化</span>
+</div>
 <div class="section-head">💄 妆造建议一览</div>
 <div class="pay-summary" style="background:rgba(255,45,85,.04);border:1px solid rgba(255,45,85,.15)">
   <h4>📸 三天妆造推荐</h4>
