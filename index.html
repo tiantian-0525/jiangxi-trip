@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>江西 7 天半 · 南昌→景德镇→婺源→三清山→葛仙村</title>
+<title>江西 7 天半 · 南昌→景德镇→婺源→三清山→葛仙村 🏺⛰️</title>
 <meta name="description" content="两人江西夏日行程：南昌滕王阁→景德镇陶瓷DIY→婺源漂流+篁岭→三清山徒步→葛仙村夜宿">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -127,6 +127,7 @@ a:hover { text-decoration: underline; }
 .tl-dot.hotel   { background: var(--tint-orange); }
 .tl-dot.drink   { background: var(--tint-purple); }
 .tl-dot.transport { background: var(--text-tertiary); }
+.tl-dot.dress   { background: var(--tint-pink); }
 
 /* ── Card ── */
 .card { background: var(--bg-elevated); border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-sm); transition: box-shadow .25s ease; cursor: pointer; }
@@ -140,6 +141,7 @@ a:hover { text-decoration: underline; }
 .badge.food   { background: rgba(255,59,48,.1);  color: var(--tint-red); }
 .badge.spot   { background: rgba(0,122,255,.1);  color: var(--tint-blue); }
 .badge.drink  { background: rgba(175,82,222,.1); color: var(--tint-purple); }
+.badge.dress  { background: rgba(255,45,85,.1); color: var(--tint-pink); }
 
 /* Budget */
 .budget { display: inline-block; margin-top: 6px; padding: 3px 10px; background: var(--bg-grouped); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-secondary); font-weight: 500; }
@@ -325,6 +327,17 @@ const DAYS = [
         gmap: '景德镇中国陶瓷博物馆'
       },
       {
+        name: '🐟 图味美小黄鱼·景德菜（浙江路店）',
+        lat: 29.2935, lng: 117.2138,
+        type: 'food', time: '12:00',
+        desc: '景德镇必吃！招牌小黄鱼酥脆鲜辣',
+        budget: '人均 60-75 元',
+        detail: '推荐：招牌小黄鱼（炸后再炒）、特色三爪煲\n浙江路与广场南路交叉口东80米，离博物馆约 2km\n打车或步行前往，饭点常排队建议早去\n营业时间：11:00-14:00 / 16:30-21:00',
+        xhsKeyword: '图味美小黄鱼 景德镇',
+        dianping: true,
+        gmap: '图味美小黄鱼景德菜浙江路店'
+      },
+      {
         name: '陶瓷DIY体验（三宝/乐天）',
         lat: 29.2660, lng: 117.2600,
         type: 'spot', time: '13:30',
@@ -341,6 +354,16 @@ const DAYS = [
         desc: '明清皇家瓷厂遗址',
         budget: '免费',
         gmap: '御窑厂国家考古遗址公园'
+      },
+      {
+        name: '💄 汉服妆造体验（陶溪川/御窑厂）',
+        lat: 29.2970, lng: 117.2250,
+        type: 'dress', time: '17:30',
+        desc: '💡 推荐做宋制汉服或民国旗袍妆造',
+        budget: '妆造+租赁约 200-400 元',
+        detail: '【推荐理由】御窑厂红砖拱形建筑+瓷器展厅，搭配宋制汉服（淡雅风）或民国风旗袍，色调绝配！\n\n陶溪川和御窑厂附近有多家汉服体验馆\n建议提前预约妆造（约 1-1.5h 化妆+造型）\n弄好后正好去陶艺街和陶溪川拍夜景📸',
+        xhsKeyword: '景德镇汉服妆造体验',
+        gmap: '景德镇陶溪川'
       },
       {
         name: '陶艺街',
@@ -418,6 +441,16 @@ const DAYS = [
         budget: '门票+索道约 145 元',
         detail: '篁岭石门峡有联票\n天街逛约 1-2h\n垒心桥玻璃栈道→梯田索道下山\n整体游玩 3-4h',
         gmap: '婺源篁岭景区'
+      },
+      {
+        name: '💄 篁岭·古风田园妆造',
+        lat: 29.3060, lng: 117.9200,
+        type: 'dress', time: '14:00',
+        desc: '💡 推荐田园古风/新中式，晒秋作背景',
+        budget: '妆造+租赁约 150-300 元',
+        detail: '【推荐理由】篁岭天街古村+晒秋五彩斑斓，搭配田园风古装或新中式穿搭，出片率极高！\n\n篁岭天街上有汉服体验馆，不用出景区\n索道上下山方便，穿汉服也不累\n建议化好妆后在天街→垒心桥一线拍照📸',
+        xhsKeyword: '婺源篁岭汉服拍照',
+        gmap: '婺源篁岭景区'
       }
     ]
   },
@@ -430,8 +463,18 @@ const DAYS = [
         type: 'spot', time: '07:30',
         desc: '世界遗产，奇峰怪石云海',
         budget: '门票+索道约 245 元',
-        detail: '路线：金沙索道→南清园(巨蟒出山)→西海岸栈道→三清宫→阳光海岸→金沙索道\n全程约 5-6h\n建议自备干粮和水',
+        detail: '【推荐路线】金沙索道↑→巨蟒出山→东方女神→阳光海岸(乾坤台)→三清宫→西海岸栈道(1600m悬崖步道)→金沙索道↓\n全程约 5-6h，栈道为主较省力\n\n💡 港首索道（2025新开）下山不排队：\n金沙索道上→南清园→阳光海岸→三清宫→港首索道下\n免费班车15分钟回金沙\n\n⚠️ 建议自备干粮和水·山顶温差大带外套·穿防滑鞋',
         gmap: '三清山金沙索道'
+      },
+      {
+        name: '💄 三清山·仙侠风妆造',
+        lat: 28.9110, lng: 118.0700,
+        type: 'dress', time: '08:30',
+        desc: '💡 推荐仙侠风/道教风白衣青衫',
+        budget: '自带或山下租赁',
+        detail: '【推荐理由】三清山是道教名山，花岗岩峰林+云海=天然仙侠片场！在巨蟒出山和西海岸栈道拍照，仙气飘飘\n\n⚠️ 爬山穿汉服较累→建议穿轻便古风（简化头饰）或只带服装到山顶观景台换装\n在南清园核心区(女神峰附近)拍完再换回便装继续走',
+        xhsKeyword: '三清山汉服拍照',
+        gmap: '三清山南清园'
       },
       {
         name: '三清山·西海岸栈道',
@@ -488,6 +531,14 @@ function overviewContent() {
 </div>
 <div class="section-head">行程概览</div>
 <div class="day-list">${DAYS.slice(1).map(d=>`<div class="card" onclick="go(${d.id})"><div class="name"><span class="dot" style="background:${d.color}"></span>${d.label} · ${d.title}</div><div class="desc">${d.date}</div></div>`).join('')}</div>
+<div class="section-head">💄 妆造建议一览</div>
+<div class="pay-summary" style="background:rgba(255,45,85,.04);border:1px solid rgba(255,45,85,.15)">
+  <h4>📸 三天妆造推荐</h4>
+  <strong>D3 景德镇·汉服/旗袍妆造</strong> — 御窑厂+陶溪川，宋制淡雅风配瓷器背景 🏺<br>
+  <strong>D5 婺源·田园古风妆造</strong> — 篁岭天街晒秋，新中式田园风格 🌾<br>
+  <strong>D6 三清山·仙侠风妆造</strong> — 西海岸悬崖云海，白衣青衫仙气飘飘 ⛰️<br>
+  <span style="color:var(--tint-pink)">💡 每个地点都有妆造店可租赁，提前1天预约</span>
+</div>
 <div class="section-head">支付提醒</div>
 <div class="pay-summary">
   <h4>💳 支付方式</h4>
@@ -501,6 +552,7 @@ function overviewContent() {
   <div class="legend-item"><div class="legend-dot" style="background:var(--tint-blue)"></div>景点</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--tint-orange)"></div>酒店</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--text-tertiary)"></div>交通</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--tint-pink)"></div>妆造</div>
 </div>`;
 }
 
@@ -551,7 +603,7 @@ function icon(color, emoji) {
 L.marker([HOTEL.lat, HOTEL.lng], { icon: icon('#ff9500','🏨'), zIndexOffset: 1000 }).addTo(map).bindPopup(`<b>${HOTEL.name}</b>`);
 
 let markers = [], polylines = [];
-const emojis = { food:'🍽️', spot:'📍', hotel:'🏨', transport:'🚃', drink:'🍺' };
+const emojis = { food:'🍽️', spot:'📍', hotel:'🏨', transport:'🚃', drink:'🍺', dress:'💄' };
 
 function clearMap() { markers.forEach(m=>map.removeLayer(m)); polylines.forEach(p=>map.removeLayer(p)); markers=[]; polylines=[]; }
 
@@ -631,8 +683,8 @@ function openXhs(key) { return openExt(key, 'xhs'); }
 function openDp(key)  { return openExt(key, 'dp'); }
 
 function locCard(loc, dayIdx) {
-  const dot = loc.type==='food'?'food':loc.type==='spot'?'spot':loc.type==='drink'?'drink':loc.type==='hotel'?'hotel':'transport';
-  const bdg = loc.type==='food'?'<span class="badge food">餐</span>':loc.type==='spot'?'<span class="badge spot">景</span>':loc.type==='drink'?'<span class="badge drink">饮</span>':'';
+  const dot = loc.type==='food'?'food':loc.type==='spot'?'spot':loc.type==='drink'?'drink':loc.type==='dress'?'dress':loc.type==='hotel'?'hotel':'transport';
+  const bdg = loc.type==='food'?'<span class="badge food">餐</span>':loc.type==='spot'?'<span class="badge spot">景</span>':loc.type==='drink'?'<span class="badge drink">饮</span>':loc.type==='dress'?'<span class="badge dress">妆</span>':'';
   const uid = `d${dayIdx}-${loc.name.replace(/\W/g,'')}`;
   const locKey = `${dayIdx}::${loc.name}`;
   const gmapQ = loc.gmap||encodeURIComponent(loc.name+' Jiangxi');
